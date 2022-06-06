@@ -9,7 +9,7 @@ pip install git+https://github.com/beerpiss/thefuck-contrib-scoop@trunk
 ```
 
 ## Rules
-- `scoop_admin_global_apps`: Elevates permission so `scoop <install/uninstall> --global` can work.
+- `scoop_admin_global_apps`: Elevates permission so `scoop <install/uninstall> --global` can work (recommend that a `sudo` replacement is available e.g. `gsudo`)
 - `scoop_help_in_subcommand`: Subcommands such as `scoop bucket add` don't take a `--help` switch, so this rule removes the subcommand.
 - `scoop_install_already_installed`: Turns `scoop install <app>` into `scoop update <app>`
 - `scoop_install_no_manifests_found`: Fixes app name for `scoop install`

@@ -1,7 +1,7 @@
 from thefuck.specific.sudo import sudo_support
 from thefuck.utils import for_app, get_close_matches, replace_command
 
-from thefuck_contrib_scoop.scoop import get_added_buckets, get_known_buckets
+from thefuck_contrib_scoop.scoop import get_added_buckets, get_known_buckets, scoop_available
 
 
 @sudo_support
@@ -21,3 +21,6 @@ def get_new_command(command):
     elif command.script_parts[2] == "rm":
         fix = get_close_matches(broken, get_added_buckets())
         return replace_command(command, broken, fix)
+
+
+enable_by_default = scoop_available
