@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "thefuck_contrib_scoop"
+version = "0.1.0"
+description = "The Fuck rules for Scoop"
+authors = ["beerpsi <beerpsi@duck.com>"]
+license = "0BSD"
+packages = [
+    { include = "thefuck_contrib_scoop" }
+]
+
+[tool.black]
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+thefuck = "^3.32"
+
+[tool.poetry.dev-dependencies]
+black = "^22.3.0"
+isort = "^5.10.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
