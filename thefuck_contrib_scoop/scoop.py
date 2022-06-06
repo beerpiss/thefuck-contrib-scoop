@@ -75,22 +75,27 @@ def get_available_options(subcommand):
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-    return list(
-        reduce(
-            lambda a, b: a + b,
-            map(
-                lambda x: list(map(lambda y: y.strip().split()[0], x.split(", ")))[0:2],
-                [
-                    x
-                    for x in proc.stdout.read()
-                    .decode("utf-8")
-                    .split("Options:\r\n")[1]
-                    .splitlines()
-                    if x
-                ],
-            ),
+    if proc.stdout:
+        return list(
+            reduce(
+                lambda a, b: a + b,
+                map(
+                    lambda x: list(map(lambda y: y.strip().split()[0], x.split(", ")))[
+                        0:2
+                    ],
+                    [
+                        x
+                        for x in proc.stdout.read()
+                        .decode("utf-8")
+                        .split("Options:\r\n")[1]
+                        .splitlines()
+                        if x
+                    ],
+                ),
+            )
         )
-    )
+    else:
+        return []
 
 
 @memoize
