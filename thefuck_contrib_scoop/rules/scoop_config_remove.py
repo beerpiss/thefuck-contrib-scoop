@@ -1,4 +1,5 @@
 from thefuck.utils import for_app
+
 from thefuck_contrib_scoop.scoop import scoop_available
 
 

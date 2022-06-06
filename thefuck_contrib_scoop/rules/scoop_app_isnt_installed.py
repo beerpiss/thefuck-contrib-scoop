@@ -1,7 +1,7 @@
 import re
 
-from thefuck.utils import for_app, get_closest
 from thefuck.specific.sudo import sudo_support
+from thefuck.utils import for_app, get_closest
 
 from thefuck_contrib_scoop.scoop import get_installed_apps
 

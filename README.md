@@ -19,3 +19,4 @@ pip install git+https://github.com/beerpiss/thefuck-contrib-scoop@trunk
 - `scoop_unknown_bucket`: Fixes bucket name for `scoop bucket add|rm`
 - `scoop_unknown_command`: Fixes wrong commands, e.g. `scoop bucke/scoop bucket`
 - `scoop_unknown_subcommand`: Fixes wrong subcommands, e.g. `scoop bucket remove/scoop bucket rm`
+- `scoop_update`: Runs `scoop update *` instead of `scoop update`
