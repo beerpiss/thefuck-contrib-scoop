@@ -48,3 +48,17 @@ def get_manifests():
                     yield file[:-5]
     except Exception:
         pass
+
+
+def get_added_buckets():
+    try:
+        buckets_dir = os.path.join(get_scoop_dir(), "buckets")
+        return os.listdir(buckets_dir)
+    except Exception:
+        pass
+
+
+def get_known_buckets():
+    buckets_json = os.path.join(get_scoop_prefix(), "buckets.json")
+    with open(buckets_json, "r") as f:
+        return list(json.loads(f.read()).keys())
