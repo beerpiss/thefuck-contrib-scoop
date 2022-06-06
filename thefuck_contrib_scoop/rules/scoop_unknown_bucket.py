@@ -1,7 +1,11 @@
 from thefuck.specific.sudo import sudo_support
 from thefuck.utils import for_app, get_close_matches, replace_command
 
-from thefuck_contrib_scoop.scoop import get_added_buckets, get_known_buckets, scoop_available
+from thefuck_contrib_scoop.scoop import (
+    get_added_buckets,
+    get_known_buckets,
+    scoop_available,
+)
 
 
 @sudo_support

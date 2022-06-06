@@ -1,5 +1,7 @@
 import json
 import os
+import subprocess
+from functools import reduce
 
 from thefuck.utils import memoize, which
 
@@ -62,3 +64,27 @@ def get_known_buckets():
     buckets_json = os.path.join(get_scoop_prefix(), "buckets.json")
     with open(buckets_json, "r") as f:
         return list(json.loads(f.read()).keys())
+
+
+def get_available_options(subcommand):
+    proc = subprocess.Popen(
+        ["scoop.cmd", "help", subcommand],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    return list(
+        reduce(
+            lambda a, b: a + b,
+            map(
+                lambda x: list(map(lambda y: y.strip().split()[0], x.split(", ")))[0:2],
+                [
+                    x
+                    for x in proc.stdout.read()
+                    .decode("utf-8")
+                    .split("Options:\r\n")[1]
+                    .splitlines()
+                    if x
+                ],
+            ),
+        )
+    )
