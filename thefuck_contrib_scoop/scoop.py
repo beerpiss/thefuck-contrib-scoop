@@ -52,6 +52,7 @@ def get_manifests():
         pass
 
 
+@memoize
 def get_added_buckets():
     try:
         buckets_dir = os.path.join(get_scoop_dir(), "buckets")
@@ -60,12 +61,14 @@ def get_added_buckets():
         pass
 
 
+@memoize
 def get_known_buckets():
     buckets_json = os.path.join(get_scoop_prefix(), "buckets.json")
     with open(buckets_json, "r") as f:
         return list(json.loads(f.read()).keys())
 
 
+@memoize
 def get_available_options(subcommand):
     proc = subprocess.Popen(
         ["scoop.cmd", "help", subcommand],
@@ -88,3 +91,8 @@ def get_available_options(subcommand):
             ),
         )
     )
+
+
+@memoize
+def get_installed_apps():
+    return os.listdir(os.path.join(get_scoop_dir(), "apps"))
