@@ -1,11 +1,9 @@
+import itertools
 import json
 import os
-import subprocess
-from functools import reduce
+from typing import Union
 
-from thefuck.utils import memoize, which
-
-scoop_available = bool(which("scoop"))
+from thefuck.utils import memoize
 
 
 def match(_):
@@ -17,17 +15,17 @@ def get_new_command(command):
 
 
 @memoize
-def get_scoop_dir():
+def get_dir():
     return os.getenv("SCOOP") or os.path.join(os.path.expanduser("~"), "scoop")
 
 
 @memoize
-def get_scoop_prefix():
-    return os.path.join(get_scoop_dir(), "apps", "scoop", "current")
+def get_prefix(app="scoop"):
+    return os.path.join(get_dir(), "apps", app, "current")
 
 
 @memoize
-def get_scoop_config(key):
+def get_config(key):
     scoop_config_file = os.path.join(
         os.path.expanduser("~"), ".config", "scoop", "config.json"
     )
@@ -38,7 +36,7 @@ def get_scoop_config(key):
 
 def get_manifests():
     try:
-        buckets_dir = os.path.join(get_scoop_dir(), "buckets")
+        buckets_dir = os.path.join(get_dir(), "buckets")
         for bucket in list(
             map(lambda x: os.path.join(buckets_dir, x), os.listdir(buckets_dir))
         ):
@@ -55,7 +53,7 @@ def get_manifests():
 @memoize
 def get_added_buckets():
     try:
-        buckets_dir = os.path.join(get_scoop_dir(), "buckets")
+        buckets_dir = os.path.join(get_dir(), "buckets")
         return os.listdir(buckets_dir)
     except Exception:
         pass
@@ -63,41 +61,72 @@ def get_added_buckets():
 
 @memoize
 def get_known_buckets():
-    buckets_json = os.path.join(get_scoop_prefix(), "buckets.json")
+    buckets_json = os.path.join(get_prefix(), "buckets.json")
     with open(buckets_json, "r") as f:
         return list(json.loads(f.read()).keys())
 
 
 @memoize
-def get_available_options(subcommand):
-    proc = subprocess.Popen(
-        ["scoop.cmd", "help", subcommand],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+def get_installed_apps():
+    return os.listdir(os.path.join(get_dir(), "apps"))
+
+
+@memoize
+def get_commands():
+    scoop_libexec = os.path.join(
+        get_prefix(),
+        "libexec",
     )
-    if proc.stdout:
+    return list(
+        map(
+            lambda val: val[:-4][
+                6:
+            ],  # remove the ".ps1" extension and the "scoop-" prefix
+            os.listdir(scoop_libexec),
+        )
+    )
+
+
+@memoize
+def get_aliases():
+    return list(get_config("alias").keys())
+
+
+@memoize
+def get_help_message(command: str) -> Union["list[str]", None]:
+    exec_path = ""
+    if command in get_commands():
+        exec_path = os.path.join(get_prefix(), "libexec", f"scoop-{command}.ps1")
+    elif command in get_aliases():
+        exec_path = os.path.join(get_dir(), "shims", f"scoop-{command}.ps1")
+    else:
+        return None
+
+    help_message_arr = []
+    with open(exec_path, "r") as f:
+        for line in f:
+            if line.startswith("#"):
+                help_message_arr.append(line[1:].strip())
+            else:
+                break
+    return help_message_arr
+
+
+@memoize
+def get_available_options(command):
+    help_msg = get_help_message(command)
+    if help_msg and "Options:" in help_msg:
+        options_list = help_msg[help_msg.index("Options:") + 1 :]
         return list(
-            reduce(
-                lambda a, b: a + b,
-                map(
-                    lambda x: list(map(lambda y: y.strip().split()[0], x.split(", ")))[
-                        0:2
-                    ],
-                    [
-                        x
-                        for x in proc.stdout.read()
-                        .decode("utf-8")
-                        .split("Options:\r\n")[1]
-                        .splitlines()
-                        if x
-                    ],
-                ),
+            itertools.chain.from_iterable(
+                [
+                    [z.strip().split()[0] for z in y.split(", ")][0:2]
+                    for y in options_list
+                ]
             )
         )
     else:
         return []
 
 
-@memoize
-def get_installed_apps():
-    return os.listdir(os.path.join(get_scoop_dir(), "apps"))
+scoop_available = os.path.exists(os.path.join(get_prefix(), "bin", "scoop.ps1"))
