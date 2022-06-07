@@ -37,9 +37,7 @@ def get_config(key):
 def get_manifests():
     try:
         buckets_dir = os.path.join(get_dir(), "buckets")
-        for bucket in list(
-            map(lambda x: os.path.join(buckets_dir, x), os.listdir(buckets_dir))
-        ):
+        for bucket in [os.path.join(buckets_dir, x) for x in os.listdir(buckets_dir)]:
             manifest_path = bucket
             if os.path.exists(os.path.join(bucket, "bucket")):
                 manifest_path = os.path.join(bucket, "bucket")
@@ -77,14 +75,7 @@ def get_commands():
         get_prefix(),
         "libexec",
     )
-    return list(
-        map(
-            lambda val: val[:-4][
-                6:
-            ],  # remove the ".ps1" extension and the "scoop-" prefix
-            os.listdir(scoop_libexec),
-        )
-    )
+    return [x[:-4][6:] for x in os.listdir(scoop_libexec)]
 
 
 @memoize
