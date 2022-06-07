@@ -12,6 +12,8 @@ def match(command):
 
 @sudo_support
 def get_new_command(command):
+    if not hasattr(command, "_script_parts"):
+        _ = command.script_parts
     del command._script_parts[2]
     return " ".join(command._script_parts)
 
